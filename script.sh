@@ -60,7 +60,7 @@ fi
 (curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin launch=n) &
 
 # Mostrar animación con parrot.live
-(curl -s parrot.live) &
+(curl -s parrot.live > /dev/null) &
 
 # Esperar a que las tareas en segundo plano finalicen
 wait
@@ -72,12 +72,11 @@ clear
 sudo ln -s ~/.local/kitty.app/bin/kitty /usr/local/bin/
 
 # Crear accesos directos al escritorio para kitty
-kitty_desktop_files=(~/.local/kitty.app/share/applications/kitty.desktop ~/.local/kitty.app/share/applications/kitty-open.desktop)
 desktop_files_dir=~/.local/share/applications/
 desktop_file_icon=/home/$USER/.local/kitty.app/share/icons/hicolor/256x256/apps/kitty.png
 kitty_exec=/home/$USER/.local/kitty.app/bin/kitty
 
-for desktop_file in "${kitty_desktop_files[@]}"; do
+for desktop_file in ~/.local/kitty.app/share/applications/kitty*.desktop; do
     cp "$desktop_file" "$desktop_files_dir"
     sed -i "s|Icon=kitty|Icon=$desktop_file_icon|g" "$desktop_files_dir/$(basename "$desktop_file")"
     sed -i "s|Exec=kitty|Exec=$kitty_exec|g" "$desktop_files_dir/$(basename "$desktop_file")"
@@ -93,23 +92,23 @@ chmod a+x ~/Desktop/kitty.desktop
 
 # Instalar Oh My Zsh
 sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)" &
-pid=$!
 
 # Mostrar barra de progreso para la instalación de Oh My Zsh
 show_progress 5
 
 # Esperar a que la instalación de Oh My Zsh finalice
-wait "$pid"
+wait
 
 # Clonar los repositorios de plugins para Zsh
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+plugins_dir=${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$plugins_dir/zsh-syntax-highlighting"
+git clone https://github.com/zsh-users/zsh-autosuggestions "$plugins_dir/zsh-autosuggestions"
 
 # Instalar fzf
 (git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && ~/.fzf/install) &
 
 # Mostrar animación con parrot.live
-(curl -s parrot.live) &
+(curl -s parrot.live > /dev/null) &
 
 # Esperar a que las tareas en segundo plano finalicen
 wait
